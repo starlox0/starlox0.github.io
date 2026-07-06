@@ -80,6 +80,12 @@
     background:rgba(255,255,255,0.05);
     color:var(--text);
     white-space:nowrap;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .tag:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,255,255,0.32);
+    background:rgba(255,255,255,0.09);
   }
   .tag::before{
     content:"";
@@ -110,6 +116,12 @@
     padding:28px 22px;
     z-index:50;
     border-right:1px solid rgba(255,255,255,0.06);
+  }
+  .scroll-progress{
+    position:absolute; left:0; top:0; width:2px;
+    background:var(--red);
+    height:0%;
+    transition:height .1s linear;
   }
   .rail-top .rail-id{
     font-family:var(--mono);
@@ -207,7 +219,13 @@
     background:radial-gradient(circle, rgba(214,48,63,0.18), transparent 70%);
     pointer-events:none;
   }
-  .hero-inner{position:relative; z-index:1; max-width:760px; padding:90px 0;}
+  .hero-row{
+    position:relative; z-index:1;
+    width:100%; max-width:1180px; margin:0 auto;
+    display:flex; align-items:center; gap:56px;
+    padding:90px 0;
+  }
+  .hero-inner{max-width:600px; flex:1 1 auto; padding:0;}
   .hero-inner .eyebrow{color:var(--steel-soft);}
   .hero-inner .eyebrow::before{background:var(--red);}
   h1{
@@ -257,6 +275,62 @@
     border-top:1px solid rgba(255,255,255,0.1);
     padding-top:22px;
   }
+
+  .stat-row{
+    display:flex; gap:36px; flex-wrap:wrap;
+    margin-top:30px; padding-top:26px;
+    border-top:1px solid rgba(255,255,255,0.1);
+  }
+  .stat{display:flex; flex-direction:column; gap:4px;}
+  .stat-num, .stat-num-text{
+    font-family:var(--mono); font-weight:700;
+    font-size:28px; color:var(--red); line-height:1;
+  }
+  .stat-label{
+    font-family:var(--mono); font-size:10.5px;
+    letter-spacing:.06em; text-transform:uppercase;
+    color:var(--steel-soft);
+  }
+
+  .hero-console{
+    flex:0 0 340px;
+    background:#0c1116;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.6);
+  }
+  .console-bar{
+    display:flex; align-items:center; gap:7px;
+    padding:11px 14px;
+    background:#141a21;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .console-bar span{
+    width:9px; height:9px; border-radius:50%;
+    background:rgba(255,255,255,0.16);
+  }
+  .console-bar span:nth-child(1){background:#e14a58;}
+  .console-bar span:nth-child(2){background:#d69b45;}
+  .console-bar span:nth-child(3){background:#3ea873;}
+  .console-bar p{
+    margin:0 0 0 10px; font-family:var(--mono); font-size:11px;
+    color:var(--steel-soft); letter-spacing:.06em;
+  }
+  .console-body{
+    padding:18px 16px 22px;
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.9;
+    color:#c9cdd2;
+    min-height:230px;
+  }
+  .console-body .cl-cmd{color:#6fd3a3;}
+  .console-body .cl-cmd::before{content:"$ "; color:var(--steel-soft);}
+  .console-body .cl-ok{color:#8b95a0;}
+  .console-body .cl-ok::before{content:"[ok] "; color:#3ea873;}
+  .console-body .cl-blank{height:8px;}
+  .console-caret{display:inline-block; width:7px; height:13px; background:#6fd3a3; vertical-align:-2px; animation:blink 1s step-end infinite;}
 
   /* ---------- about ---------- */
   #about{display:grid; grid-template-columns:1.4fr 1fr; gap:56px;}
@@ -372,7 +446,9 @@
     padding:4px 9px; border-radius:3px;
     background:rgba(255,255,255,0.06);
     border:1px solid rgba(255,255,255,0.09);
+    transition:transform .15s ease, border-color .15s ease, color .15s ease;
   }
+  .chip:hover{transform:translateY(-2px); border-color:var(--red); color:#fff;}
 
   /* ---------- education / certs / trainings ---------- */
   .split-2{display:grid; grid-template-columns:1fr 1fr; gap:56px;}
@@ -422,8 +498,30 @@
     text-decoration:none;
     color:#e7e5dd;
     transition:border-color .15s;
+    position:relative;
   }
   .contact-row:hover{border-color:var(--green);}
+  .contact-row.-copy{cursor:pointer;}
+  .contact-row .copy-hint{
+    position:absolute; right:18px; top:50%; transform:translateY(-50%);
+    font-family:var(--mono); font-size:10px; color:var(--steel-soft);
+    opacity:0; transition:opacity .15s ease;
+    background:var(--ink); padding-left:10px;
+  }
+  .contact-row:hover .copy-hint{opacity:1;}
+
+  .toast{
+    position:fixed; bottom:26px; left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#e7e5dd;
+    font-family:var(--mono); font-size:12.5px;
+    padding:12px 18px; border-radius:5px;
+    border:1px solid rgba(255,255,255,0.14);
+    opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+    z-index:200;
+  }
+  .toast.-show{opacity:1; transform:translateX(-50%) translateY(0);}
   .contact-row .k{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--steel-soft);}
   .contact-row .v{font-family:var(--mono); font-size:14px;}
 
@@ -461,7 +559,10 @@
     main{margin-left:0;}
     section{padding:56px 24px;}
     #home{padding:0 24px;}
-    .hero-inner{padding:70px 0;}
+    .hero-inner{padding:0;}
+    .hero-row{flex-direction:column; align-items:flex-start; padding:56px 0; gap:34px;}
+    .hero-console{width:100%; flex:none;}
+    .stat-row{gap:24px;}
     .art-grid, .skill-groups{grid-template-columns:1fr;}
     #contact{padding:56px 24px;}
     .contact-grid{grid-template-columns:1fr;}
@@ -472,6 +573,7 @@
 <body>
 
 <aside class="rail">
+  <div class="scroll-progress" id="scrollProgress"></div>
   <div class="rail-top">
     <div class="rail-id"><b>S. PAUL</b><br>PORTFOLIO — FY26</div>
     <nav>
@@ -507,19 +609,30 @@
 <main>
 
   <section id="home">
-    <div class="hero-inner">
-      <p class="eyebrow">ADVISORY — CLASSIFICATION: PUBLIC</p>
-      <h1>SUBHANKAR<br>PAUL</h1>
-      <p class="role-line"><span id="roleText">Security Analyst</span><span class="cursor">&nbsp;</span></p>
-      <p class="hero-lead">B.Sc. graduate in Advanced Networking and Cyber Security, finding and reporting real-world vulnerabilities through bug bounty programs and VDPs — with a track record that includes helping secure teams at Jio, Sony, NASA, BBC and Honda.</p>
-      <div class="hero-cta">
-        <a href="#contact" class="btn -primary">Get in touch</a>
-        <a href="#projects" class="btn -ghost">View projects</a>
+    <div class="hero-row">
+      <div class="hero-inner">
+        <p class="eyebrow">ADVISORY — CLASSIFICATION: PUBLIC</p>
+        <h1>SUBHANKAR<br>PAUL</h1>
+        <p class="role-line"><span id="roleText">Security Analyst</span><span class="cursor">&nbsp;</span></p>
+        <p class="hero-lead">B.Sc. graduate in Advanced Networking and Cyber Security, finding and reporting real-world vulnerabilities through bug bounty programs and VDPs — with a track record that includes helping secure teams at Jio, Sony, NASA, BBC and Honda.</p>
+        <div class="hero-cta">
+          <a href="#contact" class="btn -primary">Get in touch</a>
+          <a href="#projects" class="btn -ghost">View projects</a>
+        </div>
+        <div class="meta-strip">
+          <span class="tag -dark -green">Base: Kolkata, IN</span>
+          <span class="tag -dark -amber">Rank: Top 1% THM</span>
+          <span class="tag -dark -red">Pro Hacker · HTB</span>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><span class="stat-num" data-count="20+">0</span><span class="stat-label">Companies secured</span></div>
+          <div class="stat"><span class="stat-num" data-count="3">0</span><span class="stat-label">Official acknowledgments</span></div>
+          <div class="stat"><span class="stat-num-text">Top 1%</span><span class="stat-label">TryHackMe global rank</span></div>
+        </div>
       </div>
-      <div class="meta-strip">
-        <span class="tag -dark -green">Base: Kolkata, IN</span>
-        <span class="tag -dark -amber">Rank: Top 1% THM</span>
-        <span class="tag -dark -red">Pro Hacker · HTB</span>
+      <div class="hero-console" aria-hidden="true">
+        <div class="console-bar"><span></span><span></span><span></span><p>recon.sh</p></div>
+        <div class="console-body" id="consoleBody"></div>
       </div>
     </div>
   </section>
@@ -788,7 +901,7 @@
     <div class="contact-grid">
       <p>Open to security analyst and penetration testing roles, bug bounty collaborations, or just talking shop about a recent finding. The fastest way to reach me is email.</p>
       <div class="contact-actions">
-        <a class="contact-row" href="mailto:subhankar.paul0009@gmail.com"><span class="k">Email</span><span class="v">subhankar.paul0009@gmail.com</span></a>
+        <a class="contact-row -copy" href="mailto:subhankar.paul0009@gmail.com" id="emailRow"><span class="k">Email</span><span class="v">subhankar.paul0009@gmail.com</span><span class="copy-hint">click to copy</span></a>
         <a class="contact-row" href="https://www.linkedin.com/in/starlox/" target="_blank" rel="noopener"><span class="k">LinkedIn</span><span class="v">/in/starlox</span></a>
         <div class="contact-row" style="cursor:default;"><span class="k">Phone</span><span class="v">+91 912XXXXXXX</span></div>
       </div>
@@ -802,8 +915,129 @@
 
 </main>
 
+<div class="toast" id="toast">Copied to clipboard</div>
+
 <script>
-  // role rotator
+  // scroll progress
+  (function(){
+    var bar = document.getElementById('scrollProgress');
+    if(!bar) return;
+    function update(){
+      var h = document.documentElement;
+      var scrolled = h.scrollTop;
+      var max = h.scrollHeight - h.clientHeight;
+      var pct = max > 0 ? (scrolled / max) * 100 : 0;
+      bar.style.height = pct + '%';
+    }
+    window.addEventListener('scroll', update, {passive:true});
+    update();
+  })();
+
+  // count-up stats
+  (function(){
+    var nums = document.querySelectorAll('.stat-num');
+    if(!nums.length) return;
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function animate(el){
+      var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+      if(reduced){ el.textContent = target; return; }
+      var start = 0, duration = 900, startTime = null;
+      function step(ts){
+        if(!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        el.textContent = Math.floor(progress * target);
+        if(progress < 1) requestAnimationFrame(step);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(step);
+    }
+    nums.forEach(animate);
+  })();
+
+  // terminal console typing sequence
+  (function(){
+    var body = document.getElementById('consoleBody');
+    if(!body) return;
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var lines = [
+      {t:'cmd', text:'whoami'},
+      {t:'out', text:'subhankar_paul // security analyst'},
+      {t:'blank'},
+      {t:'cmd', text:'status --check'},
+      {t:'ok', text:'web application security'},
+      {t:'ok', text:'api security'},
+      {t:'ok', text:'cloud security (aws)'},
+      {t:'ok', text:'network security (aws)'},
+      {t:'ok', text:'bug bounty: active'},
+      {t:'blank'},
+      {t:'cmd', text:'echo $AVAILABILITY'},
+      {t:'out', text:'Pentester at Astra Security'}
+    ];
+    if(reduced){
+      lines.forEach(function(l){
+        var d = document.createElement('div');
+        if(l.t==='blank'){ d.className='cl-blank'; }
+        else if(l.t==='cmd'){ d.className='cl-cmd'; d.textContent=l.text; }
+        else if(l.t==='ok'){ d.className='cl-ok'; d.textContent=l.text; }
+        else { d.textContent=l.text; }
+        body.appendChild(d);
+      });
+      return;
+    }
+    var li = 0;
+    function nextLine(){
+      if(li >= lines.length){
+        var caret = document.createElement('span');
+        caret.className = 'console-caret';
+        body.appendChild(caret);
+        return;
+      }
+      var l = lines[li];
+      var d = document.createElement('div');
+      if(l.t === 'blank'){
+        d.className = 'cl-blank';
+        body.appendChild(d);
+        li++;
+        setTimeout(nextLine, 120);
+        return;
+      }
+      d.className = l.t === 'cmd' ? 'cl-cmd' : (l.t === 'ok' ? 'cl-ok' : '');
+      body.appendChild(d);
+      var text = l.text, ci = 0;
+      var speed = l.t === 'cmd' ? 45 : 12;
+      function typeChar(){
+        ci++;
+        d.textContent = text.slice(0, ci);
+        if(ci < text.length){ setTimeout(typeChar, speed); }
+        else { li++; setTimeout(nextLine, l.t === 'cmd' ? 250 : 90); }
+      }
+      typeChar();
+    }
+    setTimeout(nextLine, 500);
+  })();
+
+  // click to copy email
+  (function(){
+    var row = document.getElementById('emailRow');
+    var toast = document.getElementById('toast');
+    if(!row || !toast) return;
+    row.addEventListener('click', function(e){
+      e.preventDefault();
+      var email = 'subhankar.paul0009@gmail.com';
+      function showToast(){
+        toast.classList.add('-show');
+        setTimeout(function(){ toast.classList.remove('-show'); }, 1800);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(email).then(showToast).catch(function(){
+          window.location.href = 'mailto:' + email;
+        });
+      } else {
+        window.location.href = 'mailto:' + email;
+      }
+    });
+  })();
+
   (function(){
     var roles = ["Security Analyst","Penetration Tester","Bug Hunter","Content Writer"];
     var el = document.getElementById('roleText');
