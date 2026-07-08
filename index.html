@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,7 +32,8 @@
     html{scroll-behavior:auto;}
     *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
   }
-  body{
+  html,body{height:100%;overflow:hidden;}
+body{
     margin:0;
     font-family:var(--sans);
     background:var(--paper);
@@ -256,7 +258,7 @@
     transform:translate(3px,1px); mix-blend-mode:screen;
   }
 
-  main{margin-left:var(--rail-w); position:relative; z-index:2;}
+  main{margin-left:var(--rail-w);height:100vh;overflow-y:auto;overflow-x:hidden;margin-left:var(--rail-w); position:relative; z-index:2;}
   section{
     padding:88px 64px;
     max-width:1180px;
@@ -686,7 +688,7 @@
     .rail{
       width:100%; height:auto; flex-direction:row; align-items:center;
       padding:14px 18px; border-right:none; border-bottom:1px solid rgba(255,255,255,0.08);
-      position:sticky; top:0;
+      position:fixed; top:0;
     }
     #matrixRail{display:none;}
     .rail-top{display:flex; align-items:center; gap:16px;}
