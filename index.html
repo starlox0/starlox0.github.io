@@ -37,6 +37,14 @@
     background:var(--paper);
     color:var(--text);
     line-height:1.6;
+    animation:bodyFlicker 6.4s infinite;
+  }
+  @keyframes bodyFlicker{
+    0%,100%{filter:brightness(1);}
+    91%{filter:brightness(1);}
+    92%{filter:brightness(0.93);}
+    92.6%{filter:brightness(1.02);}
+    93%{filter:brightness(1);}
   }
   a{color:inherit;}
   img{max-width:100%; display:block;}
@@ -116,13 +124,20 @@
     padding:28px 22px;
     z-index:50;
     border-right:1px solid rgba(255,255,255,0.06);
+    overflow:hidden;
+  }
+  #matrixRail{
+    position:absolute; inset:0; z-index:0; opacity:0.9; pointer-events:none;
   }
   .scroll-progress{
     position:absolute; left:0; top:0; width:2px;
     background:var(--red);
     height:0%;
     transition:height .1s linear;
+    z-index:2;
+    box-shadow:0 0 8px var(--red);
   }
+  .rail-top{position:relative; z-index:1;}
   .rail-top .rail-id{
     font-family:var(--mono);
     font-size:11px;
@@ -155,7 +170,7 @@
     background:rgba(255,255,255,0.06);
   }
   .rail nav a.active .n{color:var(--red);}
-  .rail-bottom{display:flex; flex-direction:column; gap:12px;}
+  .rail-bottom{display:flex; flex-direction:column; gap:12px; position:relative; z-index:1;}
   .rail-social{display:flex; gap:10px;}
   .rail-social a{
     width:30px; height:30px;
@@ -172,14 +187,76 @@
     font-size:10.5px;
     color:var(--steel-soft);
     letter-spacing:.08em;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .rail-bottom .status .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--green);
+    box-shadow:0 0 6px var(--green);
+    animation:blink 1.6s step-end infinite;
+    flex:none;
   }
   .rail-bottom .status b{color:var(--green);}
+  .session-tag{
+    font-family:var(--mono); font-size:9.5px; color:var(--steel-soft);
+    letter-spacing:.05em;
+  }
 
   .rail-toggle{
     display:none;
   }
 
-  main{margin-left:var(--rail-w);}
+  /* ---------- CRT / scanline overlay ---------- */
+  .crt-overlay{
+    position:fixed; inset:0; z-index:90; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+  }
+  .crt-overlay::after{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.4) 100%);
+  }
+
+  /* ---------- boot sequence ---------- */
+  #bootScreen{
+    position:fixed; inset:0; z-index:500;
+    background:#05080b;
+    color:#6fd3a3;
+    font-family:var(--mono);
+    font-size:13px;
+    padding:48px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  #bootScreen.-hidden{opacity:0; visibility:hidden; pointer-events:none;}
+  #bootScreen .boot-hint{
+    position:absolute; bottom:24px; left:48px;
+    font-size:10.5px; color:var(--steel-soft); letter-spacing:.08em; text-transform:uppercase;
+  }
+  #bootLines div{margin-bottom:5px; white-space:pre-wrap;}
+  #bootLines .flash{color:var(--red); font-weight:600;}
+  #bootLines div::before{content:"> "; color:var(--steel-soft);}
+
+  /* ---------- glitch text ---------- */
+  .glitch{position:relative; display:inline-block;}
+  .glitch::before,.glitch::after{
+    content:attr(data-text);
+    position:absolute; left:0; top:0; width:100%; height:100%;
+    overflow:hidden; opacity:0;
+  }
+  .glitch.-active::before{
+    opacity:0.85; color:var(--red); clip-path:inset(8% 0 58% 0);
+    transform:translate(-3px,-1px); mix-blend-mode:screen;
+  }
+  .glitch.-active::after{
+    opacity:0.85; color:var(--green); clip-path:inset(52% 0 12% 0);
+    transform:translate(3px,1px); mix-blend-mode:screen;
+  }
+
+  main{margin-left:var(--rail-w); position:relative; z-index:2;}
   section{
     padding:88px 64px;
     max-width:1180px;
@@ -210,6 +287,7 @@
     background-image:
       repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
     pointer-events:none;
+    z-index:1;
   }
   #home::after{
     content:"";
@@ -218,9 +296,13 @@
     width:560px; height:560px;
     background:radial-gradient(circle, rgba(214,48,63,0.18), transparent 70%);
     pointer-events:none;
+    z-index:1;
+  }
+  #matrixHero{
+    position:absolute; inset:0; z-index:0; opacity:0.85; pointer-events:none;
   }
   .hero-row{
-    position:relative; z-index:1;
+    position:relative; z-index:2;
     width:100%; max-width:1180px; margin:0 auto;
     display:flex; align-items:center; gap:56px;
     padding:90px 0;
@@ -299,6 +381,8 @@
     border-radius:8px;
     overflow:hidden;
     box-shadow:0 30px 70px -20px rgba(0,0,0,0.6);
+    position:relative;
+    z-index:2;
   }
   .console-bar{
     display:flex; align-items:center; gap:7px;
@@ -390,6 +474,17 @@
     overflow:hidden;
     padding:0 64px;
     user-select:none;
+    position:relative;
+  }
+  .hexrule-track{
+    display:flex;
+    width:max-content;
+    animation:hexscroll 32s linear infinite;
+  }
+  .hexrule-track span{padding-right:48px;}
+  @keyframes hexscroll{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
   }
 
   /* ---------- projects ---------- */
@@ -519,7 +614,7 @@
     border:1px solid rgba(255,255,255,0.14);
     opacity:0; pointer-events:none;
     transition:opacity .2s ease, transform .2s ease;
-    z-index:200;
+    z-index:300;
   }
   .toast.-show{opacity:1; transform:translateX(-50%) translateY(0);}
   .contact-row .k{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--steel-soft);}
@@ -530,11 +625,53 @@
     font-family:var(--mono); font-size:11.5px;
     padding:22px 64px; border-top:1px solid rgba(255,255,255,0.08);
     display:flex; justify-content:space-between; max-width:none;
+    position:relative; z-index:2;
   }
 
   /* ---------- reveal on scroll ---------- */
   .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
   .reveal.in{opacity:1; transform:none;}
+
+  /* ---------- live threat feed (signature widget) ---------- */
+  .live-feed{
+    position:fixed; right:20px; bottom:20px; width:270px;
+    background:rgba(20,26,33,0.94);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:6px;
+    font-family:var(--mono);
+    z-index:80;
+    box-shadow:0 20px 50px -20px rgba(0,0,0,0.65);
+    overflow:hidden;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .live-feed.-hidden{opacity:0; transform:translateY(14px); pointer-events:none;}
+  .lf-head{
+    display:flex; align-items:center; gap:8px;
+    padding:9px 10px; font-size:10px; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--steel);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .lf-dot{
+    width:7px; height:7px; border-radius:50%; background:var(--green);
+    box-shadow:0 0 6px var(--green); animation:blink 1.6s step-end infinite; flex:none;
+  }
+  .lf-close{
+    margin-left:auto; background:none; border:none; color:var(--steel-soft);
+    font-size:15px; line-height:1; cursor:pointer; padding:2px 4px;
+  }
+  .lf-close:hover{color:#fff;}
+  .lf-body{
+    height:148px; overflow:hidden; padding:8px 10px;
+    display:flex; flex-direction:column-reverse; gap:5px;
+  }
+  .lf-line{
+    font-size:10.5px; color:var(--text-dim);
+    opacity:0; transform:translateY(6px);
+    animation:lfIn .3s ease forwards;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .lf-line b{color:var(--green); font-weight:600;}
+  @keyframes lfIn{to{opacity:1; transform:none;}}
 
   /* ---------- responsive ---------- */
   @media (max-width:1000px){
@@ -551,11 +688,12 @@
       padding:14px 18px; border-right:none; border-bottom:1px solid rgba(255,255,255,0.08);
       position:sticky; top:0;
     }
+    #matrixRail{display:none;}
     .rail-top{display:flex; align-items:center; gap:16px;}
     .rail-top .rail-id{margin:0;}
     .rail nav{display:none;}
     .rail-bottom{flex-direction:row; align-items:center; gap:14px;}
-    .rail-bottom .status{display:none;}
+    .rail-bottom .status, .rail-bottom .session-tag{display:none;}
     main{margin-left:0;}
     section{padding:56px 24px;}
     #home{padding:0 24px;}
@@ -567,12 +705,21 @@
     #contact{padding:56px 24px;}
     .contact-grid{grid-template-columns:1fr;}
     footer{padding:18px 24px; flex-direction:column; gap:6px;}
+    .live-feed{display:none;}
   }
 </style>
 </head>
 <body>
 
+<div class="crt-overlay" aria-hidden="true"></div>
+
+<div id="bootScreen" aria-hidden="true">
+  <div id="bootLines"></div>
+  <div class="boot-hint">click anywhere to skip</div>
+</div>
+
 <aside class="rail">
+  <canvas id="matrixRail" aria-hidden="true"></canvas>
   <div class="scroll-progress" id="scrollProgress"></div>
   <div class="rail-top">
     <div class="rail-id"><b>S. PAUL</b><br>PORTFOLIO — FY26</div>
@@ -602,17 +749,19 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="12" r="4"></circle><ellipse cx="15" cy="12" rx="3" ry="4"></ellipse><ellipse cx="21" cy="12" rx="1.3" ry="4"></ellipse></svg>
       </a>
     </div>
-    <div class="status">STATUS: <b>ACTIVE</b></div>
+    <div class="status"><span class="dot"></span>STATUS: <b>ACTIVE</b></div>
+    <div class="session-tag" id="sessionTag">SID: 0x00000000</div>
   </div>
 </aside>
 
 <main>
 
   <section id="home">
+    <canvas id="matrixHero" aria-hidden="true"></canvas>
     <div class="hero-row">
       <div class="hero-inner">
         <p class="eyebrow">ADVISORY — CLASSIFICATION: PUBLIC</p>
-        <h1>SUBHANKAR<br>PAUL</h1>
+        <h1><span class="glitch">SUBHANKAR</span><br><span class="glitch">PAUL</span></h1>
         <p class="role-line"><span id="roleText">Security Analyst</span><span class="cursor">&nbsp;</span></p>
         <p class="hero-lead">B.Sc. graduate in Advanced Networking and Cyber Security, finding and reporting real-world vulnerabilities through bug bounty programs and VDPs — with a track record that includes helping secure teams at Jio, Sony, NASA, BBC and Honda.</p>
         <div class="hero-cta">
@@ -652,7 +801,10 @@
     </div>
   </section>
 
-  <div class="hexrule" aria-hidden="true">4c 46 49 20 62 79 70 61 73 73 20 2f 2f 20 78 2d 6d 69 64 64 6c 65 77 61 72 65 2d 73 75 62 72 65 71 75 65 73 74 20 2f 2f 20 43 56 45 2d 32 30 32 34 2d 32 34 39 31 39 20 2f 2f</div>
+  <div class="hexrule" aria-hidden="true"><div class="hexrule-track">
+    <span>4c 46 49 20 62 79 70 61 73 73 20 2f 2f 20 78 2d 6d 69 64 64 6c 65 77 61 72 65 2d 73 75 62 72 65 71 75 65 73 74 20 2f 2f 20 43 56 45 2d 32 30 32 34 2d 32 34 39 31 39 20 2f 2f</span>
+    <span>4c 46 49 20 62 79 70 61 73 73 20 2f 2f 20 78 2d 6d 69 64 64 6c 65 77 61 72 65 2d 73 75 62 72 65 71 75 65 73 74 20 2f 2f 20 43 56 45 2d 32 30 32 34 2d 32 34 39 31 39 20 2f 2f</span>
+  </div></div>
 
   <section id="skills" class="reveal">
     <p class="eyebrow">02 — Capability map</p>
@@ -760,7 +912,10 @@
     </div>
   </section>
 
-  <div class="hexrule" aria-hidden="true">76 64 70 20 65 6e 74 72 79 20 2f 2f 20 61 63 6b 6e 6f 77 6c 65 64 67 65 64 20 2f 2f 20 6e 61 73 61 2e 67 6f 76 20 2f 2f 20 64 6f 65 64 2e 67 6f 76 20 2f 2f</div>
+  <div class="hexrule" aria-hidden="true"><div class="hexrule-track">
+    <span>76 64 70 20 65 6e 74 72 79 20 2f 2f 20 61 63 6b 6e 6f 77 6c 65 64 67 65 64 20 2f 2f 20 6e 61 73 61 2e 67 6f 76 20 2f 2f 20 64 6f 65 64 2e 67 6f 76 20 2f 2f</span>
+    <span>76 64 70 20 65 6e 74 72 79 20 2f 2f 20 61 63 6b 6e 6f 77 6c 65 64 67 65 64 20 2f 2f 20 6e 61 73 61 2e 67 6f 76 20 2f 2f 20 64 6f 65 64 2e 67 6f 76 20 2f 2f</span>
+  </div></div>
 
   <section id="achievements" class="reveal">
     <p class="eyebrow">05 — Track record</p>
@@ -860,7 +1015,10 @@
     </div>
   </section>
 
-  <div class="hexrule" aria-hidden="true">6d 65 64 69 75 6d 2e 63 6f 6d 2f 40 73 74 61 72 6c 6f 78 20 2f 2f 20 77 72 69 74 65 2d 75 70 20 2f 2f 20 6f 73 69 6e 74 74 65 61 6d 20 2f 2f</div>
+  <div class="hexrule" aria-hidden="true"><div class="hexrule-track">
+    <span>6d 65 64 69 75 6d 2e 63 6f 6d 2f 40 73 74 61 72 6c 6f 78 20 2f 2f 20 77 72 69 74 65 2d 75 70 20 2f 2f 20 6f 73 69 6e 74 74 65 61 6d 20 2f 2f</span>
+    <span>6d 65 64 69 75 6d 2e 63 6f 6d 2f 40 73 74 61 72 6c 6f 78 20 2f 2f 20 77 72 69 74 65 2d 75 70 20 2f 2f 20 6f 73 69 6e 74 74 65 61 6d 20 2f 2f</span>
+  </div></div>
 
   <section id="articles" class="reveal">
     <p class="eyebrow">07 — Write-ups</p>
@@ -915,6 +1073,15 @@
   </footer>
 
 </main>
+
+<div class="live-feed" id="liveFeed" aria-hidden="true">
+  <div class="lf-head">
+    <span class="lf-dot"></span>
+    <span>THREAT FEED — LIVE</span>
+    <button class="lf-close" id="lfClose" aria-label="Close threat feed">×</button>
+  </div>
+  <div class="lf-body" id="lfBody"></div>
+</div>
 
 <div class="toast" id="toast">Copied to clipboard</div>
 
@@ -1061,7 +1228,33 @@
     tick();
   })();
 
-  // scroll reveal
+  // scramble / decrypt text-reveal helper
+  function scrambleText(el, duration){
+    if(!el) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var final = el.getAttribute('data-original') || el.textContent;
+    el.setAttribute('data-original', final);
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@/\\_-";
+    var len = final.length;
+    var totalFrames = Math.max(8, Math.floor((duration || 500) / 28));
+    var frame = 0;
+    function render(){
+      var revealCount = Math.floor((frame / totalFrames) * len);
+      var out = "";
+      for(var i=0;i<len;i++){
+        var ch = final[i];
+        if(i < revealCount || ch === ' ') out += ch;
+        else out += chars[Math.floor(Math.random()*chars.length)];
+      }
+      el.textContent = out;
+      frame++;
+      if(frame <= totalFrames) requestAnimationFrame(render);
+      else el.textContent = final;
+    }
+    render();
+  }
+
+  // scroll reveal (+ scramble section eyebrows on entry)
   (function(){
     var items = document.querySelectorAll('.reveal');
     if(!('IntersectionObserver' in window)){
@@ -1070,7 +1263,12 @@
     }
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(e){
-        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          var eb = e.target.querySelector('.eyebrow');
+          if(eb) scrambleText(eb, 500);
+          io.unobserve(e.target);
+        }
       });
     }, {threshold:0.12});
     items.forEach(function(el){ io.observe(el); });
@@ -1093,6 +1291,166 @@
       });
     }, {rootMargin:'-40% 0px -50% 0px'});
     sections.forEach(function(s){ io.observe(s); });
+  })();
+
+  // boot sequence
+  (function(){
+    var boot = document.getElementById('bootScreen');
+    var linesWrap = document.getElementById('bootLines');
+    if(!boot || !linesWrap) return;
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var already = false;
+    try{ already = sessionStorage.getItem('bootSeen') === '1'; }catch(e){}
+    if(reduced || already){
+      boot.classList.add('-hidden');
+      return;
+    }
+    var log = [
+      "booting subhankar-os v3.1.2 ...",
+      "mounting /home/starlox ...",
+      "checking integrity: portfolio.bin ... OK",
+      "loading modules: recon, vapt, cloud-sec ... OK",
+      "establishing secure tunnel ...",
+      "handshake complete. tls 1.3",
+      "auth: subhankar.paul0009 ... verified",
+      "access: GRANTED"
+    ];
+    var i = 0;
+    function next(){
+      if(i >= log.length){
+        setTimeout(function(){
+          boot.classList.add('-hidden');
+          try{ sessionStorage.setItem('bootSeen','1'); }catch(e){}
+        }, 500);
+        return;
+      }
+      var d = document.createElement('div');
+      if(log[i].indexOf('GRANTED') > -1) d.className = 'flash';
+      d.textContent = log[i];
+      linesWrap.appendChild(d);
+      i++;
+      setTimeout(next, 220);
+    }
+    setTimeout(next, 300);
+    boot.addEventListener('click', function(){
+      boot.classList.add('-hidden');
+      try{ sessionStorage.setItem('bootSeen','1'); }catch(e){}
+    });
+  })();
+
+  // hero eyebrow scramble once boot clears
+  (function(){
+    var el = document.querySelector('#home .eyebrow');
+    setTimeout(function(){ scrambleText(el, 600); }, 2700);
+  })();
+
+  // glitch bursts on name
+  (function(){
+    var glitches = document.querySelectorAll('.glitch');
+    if(!glitches.length) return;
+    glitches.forEach(function(el){ el.setAttribute('data-text', el.textContent); });
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    function burst(){
+      var el = glitches[Math.floor(Math.random()*glitches.length)];
+      el.classList.add('-active');
+      setTimeout(function(){ el.classList.remove('-active'); }, 180);
+      setTimeout(burst, 2600 + Math.random()*3400);
+    }
+    setTimeout(burst, 3200);
+  })();
+
+  // session id ticker
+  (function(){
+    var tag = document.getElementById('sessionTag');
+    if(!tag) return;
+    function rndHex(len){
+      var s = '';
+      for(var i=0;i<len;i++) s += Math.floor(Math.random()*16).toString(16);
+      return s;
+    }
+    function update(){ tag.textContent = 'SID: 0x' + rndHex(8); }
+    update();
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      setInterval(update, 4000);
+    }
+  })();
+
+  // matrix rain canvases
+  function startMatrixRain(canvasId, opts){
+    var canvas = document.getElementById(canvasId);
+    if(!canvas) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var ctx = canvas.getContext('2d');
+    var parent = canvas.parentElement;
+    var fontSize = (opts && opts.fontSize) || 14;
+    var chars = "01アイウエオカキクケコサシスセソ$#@%&";
+    var cols, drops;
+    function resize(){
+      var rect = parent.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      cols = Math.max(1, Math.floor(canvas.width / fontSize));
+      drops = new Array(cols).fill(0).map(function(){ return Math.random() * -40; });
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    function draw(){
+      ctx.fillStyle = (opts && opts.fade) || 'rgba(10,14,18,0.18)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = (opts && opts.color) || 'rgba(62,168,115,0.55)';
+      ctx.font = fontSize + 'px monospace';
+      for(var i=0;i<cols;i++){
+        var text = chars[Math.floor(Math.random()*chars.length)];
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975){
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  }
+  startMatrixRain('matrixHero', {fontSize:15, color:'rgba(62,168,115,0.5)', fade:'rgba(18,24,31,0.15)'});
+  startMatrixRain('matrixRail', {fontSize:12, color:'rgba(62,168,115,0.35)', fade:'rgba(18,24,31,0.2)'});
+
+  // live threat feed widget
+  (function(){
+    var feed = document.getElementById('liveFeed');
+    var body = document.getElementById('lfBody');
+    var closeBtn = document.getElementById('lfClose');
+    if(!feed || !body) return;
+    closeBtn.addEventListener('click', function(){ feed.classList.add('-hidden'); });
+    var events = [
+      ["SYN scan", "10.4x.x.x blocked"],
+      ["TLS 1.3", "handshake completed"],
+      ["WAF", "pattern flagged (sandbox)"],
+      ["Cert", "renewed *.starlox.dev"],
+      ["Rate limit", "triggered /api/auth"],
+      ["Honeypot", "ping received"],
+      ["GeoIP", "connection region: SG"],
+      ["Session", "token rotated"],
+      ["Recon", "port sweep completed"],
+      ["IDS", "signature match: benign"]
+    ];
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function ts(){
+      var d = new Date();
+      function p(n){ return (n<10?'0':'')+n; }
+      return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+    }
+    function addLine(){
+      var ev = events[Math.floor(Math.random()*events.length)];
+      var el = document.createElement('div');
+      el.className = 'lf-line';
+      el.innerHTML = ts() + ' <b>' + ev[0] + '</b> ' + ev[1];
+      body.appendChild(el);
+      while(body.children.length > 6){ body.removeChild(body.firstChild); }
+    }
+    for(var k=0;k<3;k++) addLine();
+    if(!reduced){
+      setInterval(addLine, 2600);
+    }
   })();
 </script>
 
